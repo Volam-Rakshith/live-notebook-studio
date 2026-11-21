@@ -13,20 +13,39 @@
   <div class="status" id="gameStatus">STREAM LIVE</div>
 </div>
 <div id="toast"></div>
-<div id="fallback">WebGL is required for LIVE NOTEBOOK STUDIO.<br>Open this page in a modern browser with hardware acceleration enabled.</div>
+<div id="fallback"></div>
 <script type="importmap">
 { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
 </script>
 <script type="module">
-import { GameRenderer } from './js/game-renderer.js';
-try{
-  const renderer=new GameRenderer(document.getElementById('app'));
-  renderer.start();
-  // listen for theme/book/etc from dashboard
-  window.__game=renderer;
-}catch(e){
-  document.getElementById('fallback').style.display='grid';
-  console.error(e);
+// First, test WebGL support directly so we can tell the real cause apart.
+function webglOK(){
+  try{
+    const c=document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl')||c.getContext('experimental-webgl')));
+  }catch(e){ return false; }
+}
+function show(title, detail){
+  const f=document.getElementById('fallback');
+  f.style.display='grid';
+  f.innerHTML='<div style="max-width:560px"><h2 style="color:#f5d67b;letter-spacing:.1em;margin-bottom:10px">'+title+'</h2><p style="color:#c8c8d8;line-height:1.6;font-size:14px">'+detail+'</p></div>';
+}
+
+if(!webglOK()){
+  show('WebGL is not available',
+    'Your browser could not create a WebGL context. In Chrome/Edge: Settings → System → make sure <b>Use hardware acceleration when available</b> is ON, then restart the browser. On a laptop, ensure your graphics driver is up to date.');
+}
+else{
+  try{
+    const renderer=new (await import('./js/game-renderer.js')).GameRenderer(document.getElementById('app'));
+    renderer.start();
+    window.__game=renderer;
+  }catch(e){
+    console.error(e);
+    show('Failed to start the 3D engine',
+      'WebGL works, but the engine threw an error. <b>'+String(e&&e.message||e)+'</b><br><br>'+
+      'If it mentions "three" or module loading, the Three.js library did not load — check your internet connection (the game loads Three.js from a CDN at runtime), then reload.');
+  }
 }
 </script>
 </body>
