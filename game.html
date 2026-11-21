@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIVE NOTEBOOK STUDIO — Game</title>
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<div id="app"></div>
+<div class="hud">
+  <div class="brand">LIVE <span>NOTEBOOK</span> STUDIO · VR DEVELOPMENTS</div>
+  <div class="status" id="gameStatus">STREAM LIVE</div>
+</div>
+<div id="toast"></div>
+<div id="fallback">WebGL is required for LIVE NOTEBOOK STUDIO.<br>Open this page in a modern browser with hardware acceleration enabled.</div>
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import { GameRenderer } from './js/game-renderer.js';
+try{
+  const renderer=new GameRenderer(document.getElementById('app'));
+  renderer.start();
+  // listen for theme/book/etc from dashboard
+  window.__game=renderer;
+}catch(e){
+  document.getElementById('fallback').style.display='grid';
+  console.error(e);
+}
+</script>
+</body>
+</html>

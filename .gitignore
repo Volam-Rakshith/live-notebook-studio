@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+
+# Logs / local
+*.log
+
+# Dependency / build dirs
+node_modules/
+dist/
+build/
+
+# Keep zips out of the repo
+*.zip

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIVE NOTEBOOK STUDIO — VR DEVELOPMENTS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/dashboard.css">
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">L</div>
+    <div><h1>LIVE <span>NOTEBOOK</span> STUDIO</h1><p>VR DEVELOPMENTS</p></div>
+  </div>
+  <div class="status">
+    <span class="pill live" id="liveStatus"><i></i>LIVE</span>
+    <button class="btn gold" id="previewBtn">▶ Preview Public Game</button>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- LEFT: entry + theme/book -->
+  <section>
+    <div class="card">
+      <h2>Manual Entry Editor <small>default mode</small></h2>
+      <textarea id="manualEntry" placeholder="Type what the character should write into the notebook..."></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn gold" id="submitBtn">Submit &amp; Animate</button>
+        <button class="btn" id="submitSuggestBtn">Write Selected Suggestion</button>
+      </div>
+      <p class="small" style="margin-top:8px">Manual typing is always the primary mode. Suggestions never auto-write.</p>
+    </div>
+
+    <div class="card">
+      <h2>Theme Selector <small>streamer only</small></h2>
+      <div class="grid2" id="themeGrid">
+        <button class="theme-btn" data-theme="CLASSIC"><b>CLASSIC</b><span>Dark gothic desk</span></button>
+        <button class="theme-btn" data-theme="OG"><b>OG</b><span>Golden archive</span></button>
+        <button class="theme-btn" data-theme="VIP"><b>VIP</b><span>Purple chamber</span></button>
+        <button class="theme-btn" data-theme="WINTER"><b>WINTER</b><span>Snowy festival</span></button>
+        <button class="theme-btn" data-theme="CYBER"><b>CYBER</b><span>Neon futuristic</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Book Selector <small>cosmetic</small></h2>
+      <div class="grid2" id="bookGrid">
+        <button class="book-btn" data-book="CLASSIC"><b>CLASSIC</b><span>Default book</span></button>
+        <button class="book-btn" data-book="OG"><b>OG</b><span>First-50 edition</span></button>
+        <button class="book-btn" data-book="MEMBER"><b>MEMBER</b><span>Level 1</span></button>
+        <button class="book-btn" data-book="ROYAL"><b>ROYAL</b><span>Level 2</span></button>
+        <button class="book-btn" data-book="LEGENDARY"><b>LEGENDARY</b><span>Level 3</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Animation Controls</h2>
+      <div class="row">
+        <button class="btn" id="pauseBtn">⏸ Pause / Resume</button>
+        <button class="btn danger" id="estopBtn">⛔ Emergency Stop</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" id="pageBtn">📄 Turn Page</button>
+        <button class="btn ghost" id="resetBtn">↺ Reset Page</button>
+      </div>
+      <label>Animation Speed <span id="speedVal" style="float:right">1.0x</span></label>
+      <input type="range" id="speedRange" min="0.5" max="2.5" step="0.1" value="1">
+      <label>Particle Intensity <span id="particleVal" style="float:right">100%</span></label>
+      <input type="range" id="particleRange" min="0" max="1.5" step="0.1" value="1">
+      <label>Sound</label>
+      <div class="switch"><span class="small">Web Audio synth SFX</span><input type="checkbox" id="soundToggle" checked></div>
+    </div>
+  </section>
+
+  <!-- CENTER: queue + automation + chat -->
+  <section>
+    <div class="card">
+      <h2>Viewer Suggestion Queue <small id="queueCount">0</small></h2>
+      <div id="queueList" style="max-height:320px;overflow:auto"></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn" id="delBtn">Delete Selected</button>
+        <button class="btn ghost" id="clearBtn">Clear Queue</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Optional Automation <small>OFF by default</small></h2>
+      <div class="switch"><span class="small">Auto-approve filtered suggestions (never interrupts in-progress; manual priority)</span><input type="checkbox" id="autoToggle"></div>
+    </div>
+
+    <div class="card">
+      <h2>YouTube Live Chat Integration</h2>
+      <label>YouTube Data API v3 Key</label>
+      <input id="apiKey" placeholder="public API key (free quota)">
+      <label>Live Chat ID</label>
+      <input id="liveChatId" placeholder="get from stream settings / chat widget">
+      <div class="row" style="margin-top:8px">
+        <button class="btn gold" id="chatConnect">Connect</button>
+        <button class="btn ghost" id="chatDisconnect">Disconnect</button>
+      </div>
+      <div class="log" id="chatLog"></div>
+      <p class="small">Requires free Google Cloud OAuth for membership tiers. Never expose secrets in frontend — see README.</p>
+    </div>
+  </section>
+
+  <!-- RIGHT: stats + OG + history -->
+  <section>
+    <div class="card">
+      <h2>Viewer Statistics</h2>
+      <div class="stat">
+        <div><b id="statViewers">0</b><span>Unique viewers</span></div>
+        <div><b id="statEntries">0</b><span>Entries written</span></div>
+        <div><b id="statQueue">0</b><span>Queued</span></div>
+        <div><b id="memberStatus">—</b><span>Members</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>First-50 OG Tracking</h2>
+      <b style="font-size:22px"><span id="ogCount">0/50</span></b>
+      <div class="ogbar"><i id="ogBar"></i></div>
+      <p class="small">First 50 unique channel identities per stream. Duplicates don't inflate.</p>
+      <button class="btn" id="ogReset">Reset for New Stream</button>
+    </div>
+
+    <div class="card">
+      <h2>Stream History</h2>
+      <div class="history" id="historyList"></div>
+    </div>
+
+    <div class="card">
+      <h2>Event Log</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">LIVE NOTEBOOK STUDIO · MADE BY <b>VR DEVELOPMENTS</b> · FREE-FIRST</div>
+<script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
