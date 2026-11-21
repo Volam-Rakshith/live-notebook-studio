@@ -1,6 +1,6 @@
 // Environment Manager — builds theme-specific desk, props, lights, fog. Procedural geometry only (₹0).
 import * as THREE from 'three';
-import { ParticleSystem } from './particle-system.js';
+import { ParticleSystem } from './particle-system.js?v=2';
 
 export class EnvironmentManager {
   constructor(scene){ this.scene=scene; this.group=new THREE.Group(); this.particles=null; this.keyLight=null; this.ambLight=null; this.rimLight=null; scene.add(this.group); }
@@ -24,8 +24,7 @@ export class EnvironmentManager {
     if(theme==='CYBER') this.neonRings(palette);
 
     if(this.particles) this.particles.dispose();
-    this.particles=new ParticleSystem(this.group, palette.particle, theme);
-    this.particles.start();
+    this.particles=new ParticleSystem(this.group, palette.particle, theme); // auto-starts on construction
   }
   dispose(){
     this.group.traverse(o=>{ if(o.isMesh||o.isLight){ this.group.remove(o); o.geometry?.dispose?.(); if(o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose()); } } });

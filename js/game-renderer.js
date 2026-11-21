@@ -1,7 +1,7 @@
 // Game Renderer — wires all 3D systems, listens for dashboard commands via BroadcastChannel.
 import * as THREE from 'three';
 import { ThemeManager } from './theme-manager.js';
-import { EnvironmentManager } from './environment-manager.js';
+import { EnvironmentManager } from './environment-manager.js?v=2';
 import { NotebookSystem } from './notebook-system.js';
 import { HandAnimation } from './hand-animation.js';
 import { WritingAnimation } from './writing-animation.js';
