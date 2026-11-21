@@ -17,7 +17,10 @@ export class ParticleSystem {
     const mat=new THREE.PointsMaterial({color, size, transparent:true, opacity:0.9, depthWrite:false, blending:THREE.AdditiveBlending});
     this.points=new THREE.Points(geo, mat);
     parent.add(this.points);
+    this.running=true; // particles animate immediately on construction
   }
+  start(){ this.running=true; }
+  stop(){ this.running=false; }
   adaptiveCount(t){ // respect weaker hardware
     const weak = navigator.hardwareConcurrency && navigator.hardwareConcurrency<=4;
     const base = weak? 90 : 220;
@@ -25,6 +28,7 @@ export class ParticleSystem {
   }
   setIntensity(v){ this.points.material.opacity=Math.min(1, v); this.points.material.size=(this.points.material.size||0.05)*v; }
   update(t, dt=0.016){
+    if(!this.running) return;
     const p=this.points.geometry.attributes.position.array;
     for(let i=0;i<this.count;i++){
       this.life[i]+=dt*0.3;
